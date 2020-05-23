@@ -3,10 +3,8 @@ package com.example.querydsl;
 import com.example.querydsl.dto.MemberDto;
 import com.example.querydsl.dto.QMemberDto;
 import com.example.querydsl.dto.UserDto;
-import com.example.querydsl.entity.Member;
-import com.example.querydsl.entity.QMember;
-import com.example.querydsl.entity.QTeam;
-import com.example.querydsl.entity.Team;
+import com.example.querydsl.entity.*;
+import com.example.querydsl.repository.TestEntityRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ExpressionUtils;
@@ -20,14 +18,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.querydsl.entity.QMember.member;
 import static com.example.querydsl.entity.QTeam.team;
@@ -47,9 +44,12 @@ public class QuerydslBasicTest {
     @Autowired
     MemberRepository memberRepository;
 
+    @Autowired
+    TestEntityRepository testEntityRepository;
+
     @BeforeEach
     public void beforeEach() {
-        Team teamA = new Team("teamA");
+/*        Team teamA = new Team("teamA");
         Team teamB = new Team("teamB");
         em.persist(teamA);
         em.persist(teamB);
@@ -63,7 +63,7 @@ public class QuerydslBasicTest {
         em.persist(member1);
         em.persist(member2);
         em.persist(member3);
-        em.persist(member4);
+        em.persist(member4);*/
     }
 
     @Test
@@ -625,6 +625,38 @@ public class QuerydslBasicTest {
         for (String s : fetch) {
             System.out.println(s);
         }
+    }
+
+    @Test
+    public void compositeKeySelectTest() throws Exception {
+        Member member1 = new Member("member1", 10, null);
+        em.persist(member1);
+
+        TestEntity testEntity = new TestEntity(member1, 2L);
+        em.persist(testEntity);
+
+        em.flush();
+        em.clear();
+
+        TestId testId = new TestId();
+        testId.setMember(member1.getId());
+        testId.setTestId(2L);
+//        TestEntity findTestEntity = em.find(TestEntity.class, testId);                  /*entitymanager.find(*/
+/*        TestEntity findTestEntity = em                                                  // jpql find
+                .createQuery("select t from TestEntity t where t.member.id = :memberId and t.testId = :testId", TestEntity.class)
+                .setParameter("memberId", member1.getId())
+                .setParameter("testId", 2L)
+                .getSingleResult();*/
+        TestEntity findTestEntity = queryFactory                                         //querydsl find
+                .selectFrom(QTestEntity.testEntity)
+                .where(QTestEntity.testEntity.member.id.eq(member1.getId()), QTestEntity.testEntity.testId.eq(2L))
+                .fetchOne();
+
+//        TestEntity findTestEntity = testEntityRepository.findById(testId).orElse(null); // spring data jpa
+
+
+        assertEquals(testEntity.getMember().getId(), findTestEntity.getMember().getId());
+        assertEquals(testEntity.getTestId(), findTestEntity.getTestId());
     }
 
 
