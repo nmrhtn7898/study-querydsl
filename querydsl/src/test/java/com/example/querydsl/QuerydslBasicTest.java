@@ -4,6 +4,7 @@ import com.example.querydsl.dto.MemberDto;
 import com.example.querydsl.dto.QMemberDto;
 import com.example.querydsl.dto.UserDto;
 import com.example.querydsl.entity.*;
+import com.example.querydsl.repository.MemberRepository;
 import com.example.querydsl.repository.TestEntityRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
@@ -24,7 +25,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import java.util.List;
-import java.util.Optional;
 
 import static com.example.querydsl.entity.QMember.member;
 import static com.example.querydsl.entity.QTeam.team;
@@ -49,7 +49,7 @@ public class QuerydslBasicTest {
 
     @BeforeEach
     public void beforeEach() {
-/*        Team teamA = new Team("teamA");
+        Team teamA = new Team("teamA");
         Team teamB = new Team("teamB");
         em.persist(teamA);
         em.persist(teamB);
@@ -63,7 +63,7 @@ public class QuerydslBasicTest {
         em.persist(member1);
         em.persist(member2);
         em.persist(member3);
-        em.persist(member4);*/
+        em.persist(member4);
     }
 
     @Test
@@ -569,7 +569,7 @@ public class QuerydslBasicTest {
 
         System.out.println(member2);*/
 
-        Member member1 = memberRepository.findByUsername("member1");
+/*        Member member1 = memberRepository.findByUsername("member1");
 
         Member member11 = memberRepository.findByUsername("member1");
         Member member12 = memberRepository.findByUsername("member1");
@@ -578,7 +578,7 @@ public class QuerydslBasicTest {
         assertEquals(member1, member11);
         assertEquals(member11, member12);
         assertEquals(member12, member13);
-        assertEquals(member1, member13);
+        assertEquals(member1, member13);*/
     }
 
     @Test
@@ -658,6 +658,7 @@ public class QuerydslBasicTest {
         assertEquals(testEntity.getMember().getId(), findTestEntity.getMember().getId());
         assertEquals(testEntity.getTestId(), findTestEntity.getTestId());
     }
+
 
 
 }
